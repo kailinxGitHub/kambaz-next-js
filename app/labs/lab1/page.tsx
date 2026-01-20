@@ -1,8 +1,27 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Lab1() {
   return (
     <div id="wd-lab1">
+      <h2>Kailin Xing</h2>
+      <p>Section: CS 4550 SP26</p>
+      <h3>Source Code Repositories</h3>
+      <ul>
+        <li>
+          <a
+            href="https://github.com/kailinxGitHub/kambaz-next-js"
+            id="wd-github"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            GitHub Repository
+          </a>
+        </li>
+      </ul>
+
+      <hr style={{ margin: "2em 0" }} />
+
       <h2>Lab 1</h2>
       <h3>HTML Examples</h3>
       <div id="wd-h-tag">
