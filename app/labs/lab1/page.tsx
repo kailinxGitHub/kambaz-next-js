@@ -35,8 +35,8 @@ export default function Lab1() {
         such as HTML Documents, HTML Tags, Heading Tags, etc. HTML heading tags
         can be used to format plain text so that it renders in a browser as
         large headings. There are 6 heading tags for different sizes: h1, h2,
-        h3, h4, h5, and h6. Tag h1 is the largest heading and h6 is the smallest
-        heading.
+        h3, h4, h5, and h6. Tag h1 is the largest heading and h6 is the
+        smallest`` heading.
       </div>
       <div id="wd-p-tag">
         <h4>Paragraph Tag</h4>
@@ -92,6 +92,7 @@ export default function Lab1() {
         <ul id="wd-my-books">
           <li>Dune</li>
           <li>Lord of the Rings</li>
+          <li>Ender's Game</li>
           <li>Red Mars</li>
           <li>The Forever War</li>
         </ul>
