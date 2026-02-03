@@ -10,7 +10,7 @@ export default function Lab1() {
       <ul>
         <li>
           <a
-            href="https://github.com/kailinxGitHub/kambaz-next-js"
+            href="https://github.com/kailinxGitHub/kambaz-next-js/tree/a1"
             id="wd-github"
             target="_blank"
             rel="noopener noreferrer"
