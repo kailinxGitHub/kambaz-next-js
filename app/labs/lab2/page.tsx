@@ -24,6 +24,24 @@ import ReactIconsSampler from "./ReactIconsSampler";
 export default function Lab2() {
   return (
     <Container>
+      <h2>Kailin Xing</h2>
+      <p>Section: CS 4550 SP26</p>
+      <h3>Source Code Repositories</h3>
+      <ul>
+        <li>
+          <a
+            href="https://github.com/kailinxGitHub/kambaz-next-js/tree/a2"
+            id="wd-github"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            GitHub Repository
+          </a>
+        </li>
+      </ul>
+
+      <hr style={{ margin: "2em 0" }} />
+
       <div id="wd-lab2">
         <h2>Lab 2 - Cascading Style Sheets</h2>
         <h3>Styling with the STYLE attribute</h3>

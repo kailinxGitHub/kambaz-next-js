@@ -1,8 +1,16 @@
 import Link from "next/link";
+
 export default function labs() {
   return (
     <div id="wd-labs">
       <h1>Labs</h1>
+      <p>
+        <Link href="https://github.com/kailinxGitHub/kambaz-next-js" id="wd-github">
+          GitHub Repository
+        </Link>
+        {" · "}
+        Kailin Xing
+      </p>
       <ul>
         <li>
           <Link href="/labs/lab1" id="wd-lab1-link">
