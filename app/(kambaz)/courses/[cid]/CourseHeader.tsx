@@ -3,11 +3,12 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FaBars } from "react-icons/fa6";
+import * as db from "../../database";
 
 export default function CourseHeader({ cid }: { cid: string }) {
   const pathname = usePathname();
-
-  const courseLabel = "CS5610 SU1 24 MO...";
+  const course = db.courses.find((course: any) => course._id === cid);
+  const courseLabel = course ? course.name : "Course Not Found";
 
   const segments: { label: string; href: string }[] = [
     { label: courseLabel, href: `/courses/${cid}/home` },
@@ -19,8 +20,8 @@ export default function CourseHeader({ cid }: { cid: string }) {
       href: `/courses/${cid}/assignments`,
     });
     const aidMatch = pathname?.match(/\/assignments\/([^/]+)/);
-    if (aidMatch) {
-      segments.push({ label: "A1", href: pathname });
+    if (aidMatch && aidMatch[1] !== "page") {
+      segments.push({ label: aidMatch[1], href: pathname });
     }
   } else if (pathname?.includes("/modules")) {
     segments.push({ label: "Modules", href: `/courses/${cid}/modules` });
