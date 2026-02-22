@@ -80,7 +80,7 @@ export default function KambazNavigation() {
       <ListGroupItem className={navItemClass("/courses")}>
         <Link
           href="/courses"
-          id="wd-course-link"
+          id="wd-courses-link"
           className={linkClass("/courses")}
         >
           <AiOutlineDashboard className={iconClass("/courses")} />

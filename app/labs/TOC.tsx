@@ -10,32 +10,34 @@ export default function TOC() {
   return (
     <Nav variant="pills" activeKey={pathname ?? undefined}>
       <NavItem>
-        <NavLink href="/labs" as={Link} eventKey="/labs">
+        <NavLink href="/labs" as={Link} className={pathname.endsWith("labs") ? "active" : ""}>
           Labs
         </NavLink>
       </NavItem>
       <NavItem>
-        <NavLink href="/labs/lab1" as={Link} eventKey="/labs/lab1">
+        <NavLink href="/labs/lab1" as={Link} className={pathname.endsWith("lab1") ? "active" : ""}>
           Lab 1
         </NavLink>
       </NavItem>
       <NavItem>
-        <NavLink href="/labs/lab2" as={Link} eventKey="/labs/lab2">
+        <NavLink href="/labs/lab2" as={Link} className={pathname.endsWith("lab2") ? "active" : ""}>
           Lab 2
         </NavLink>
       </NavItem>
       <NavItem>
-        <NavLink href="/labs/lab3" as={Link} eventKey="/labs/lab3">
+        <NavLink href="/labs/lab3" as={Link} className={pathname.endsWith("lab3") ? "active" : ""}>
           Lab 3
         </NavLink>
       </NavItem>
       <NavItem>
-        <NavLink href="/" as={Link} eventKey="/">
+        <NavLink href="/" as={Link}>
           Kambaz
         </NavLink>
       </NavItem>
       <NavItem>
-        <NavLink href="https://github.com/kailinxGitHub">My GitHub</NavLink>
+        <NavLink href="https://github.com/kailinxGitHub" id="wd-github">
+          My GitHub
+        </NavLink>
       </NavItem>
     </Nav>
   );

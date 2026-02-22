@@ -1,0 +1,72 @@
+[
+  {
+    "_id": "123",
+    "firstName": "Alice",
+    "lastName": "Wonderland",
+    "loginId": "alice",
+    "section": "S101",
+    "role": "STUDENT",
+    "lastActivity": "2020-10-01",
+    "totalActivity": "10:00:00"
+  },
+  {
+    "_id": "234",
+    "firstName": "Bob",
+    "lastName": "Hope",
+    "loginId": "bob",
+    "section": "S101",
+    "role": "STUDENT",
+    "lastActivity": "2020-10-02",
+    "totalActivity": "11:00:00"
+  },
+  {
+    "_id": "345",
+    "firstName": "Charlie",
+    "lastName": "Brown",
+    "loginId": "charlie",
+    "section": "S101",
+    "role": "STUDENT",
+    "lastActivity": "2020-10-03",
+    "totalActivity": "12:00:00"
+  },
+  {
+    "_id": "456",
+    "firstName": "Dan",
+    "lastName": "Aykroyd",
+    "loginId": "dan",
+    "section": "S101",
+    "role": "STUDENT",
+    "lastActivity": "2020-10-04",
+    "totalActivity": "13:00:00"
+  },
+  {
+    "_id": "567",
+    "firstName": "Eve",
+    "lastName": "Polastri",
+    "loginId": "eve",
+    "section": "S101",
+    "role": "STUDENT",
+    "lastActivity": "2020-10-05",
+    "totalActivity": "14:00:00"
+  },
+  {
+    "_id": "789",
+    "firstName": "Grace",
+    "lastName": "Hopper",
+    "loginId": "grace",
+    "section": "S102",
+    "role": "STUDENT",
+    "lastActivity": "2020-10-06",
+    "totalActivity": "15:00:00"
+  },
+  {
+    "_id": "890",
+    "firstName": "Heidi",
+    "lastName": "Klum",
+    "loginId": "heidi",
+    "section": "S102",
+    "role": "STUDENT",
+    "lastActivity": "2020-10-07",
+    "totalActivity": "16:00:00"
+  }
+]
