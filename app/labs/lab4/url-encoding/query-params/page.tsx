@@ -1,6 +1,8 @@
 "use client";
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-export default function QueryParams() {
+
+function QueryParamsContent() {
   const searchParams = useSearchParams();
   const a = searchParams.get("a") || "0";
   const b = searchParams.get("b") || "0";
@@ -12,5 +14,13 @@ export default function QueryParams() {
       <p>b = {b}</p>
       <p>sum = {sum}</p>
     </div>
+  );
+}
+
+export default function QueryParams() {
+  return (
+    <Suspense fallback={<div id="wd-query-params">Loading...</div>}>
+      <QueryParamsContent />
+    </Suspense>
   );
 }

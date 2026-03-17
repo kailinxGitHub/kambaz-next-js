@@ -92,16 +92,18 @@ export default function Assignments() {
                     </div>
                   </Link>
                 ) : (
-                  <div className="wd-assignment-title fw-bold">
-                    {assignment.title}
-                  </div>
-                  <div className="wd-assignment-subtext text-secondary small">
-                    <span className="text-danger">Multiple Modules</span> |{" "}
-                    <strong>Available from</strong> {assignment.availableDate} |{" "}
-                    <strong>Available until</strong>{" "}
-                    {assignment.availableUntil || assignment.dueDate} |{" "}
-                    <strong>Due</strong> {assignment.dueDate} | {assignment.points} pts
-                  </div>
+                  <>
+                    <div className="wd-assignment-title fw-bold">
+                      {assignment.title}
+                    </div>
+                    <div className="wd-assignment-subtext text-secondary small">
+                      <span className="text-danger">Multiple Modules</span> |{" "}
+                      <strong>Available from</strong> {assignment.availableDate} |{" "}
+                      <strong>Available until</strong>{" "}
+                      {assignment.availableUntil || assignment.dueDate} |{" "}
+                      <strong>Due</strong> {assignment.dueDate} | {assignment.points} pts
+                    </div>
+                  </>
                 )}
               </div>
               {canEditAssignments && (
