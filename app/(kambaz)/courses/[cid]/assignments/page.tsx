@@ -5,12 +5,18 @@ import { Button, ListGroup, ListGroupItem } from "react-bootstrap";
 import { FaPlus } from "react-icons/fa6";
 import { IoSearch } from "react-icons/io5";
 import { BsPlus } from "react-icons/bs";
+import { FaTrash } from "react-icons/fa";
 import { useParams } from "next/navigation";
-import * as db from "../../../database";
+import { useSelector, useDispatch } from "react-redux";
+import { deleteAssignment } from "./reducer";
 
 export default function Assignments() {
   const { cid } = useParams();
-  const assignments = db.assignments.filter((a: any) => a.course === cid);
+  const { assignments } = useSelector((state: any) => state.assignmentsReducer);
+  const { currentUser } = useSelector((state: any) => state.accountReducer);
+  const dispatch = useDispatch();
+  const courseAssignments = assignments.filter((a: any) => a.course === cid);
+  const canEditAssignments = currentUser?.role === "FACULTY";
 
   return (
     <div id="wd-assignments" className="mb-4">
@@ -30,24 +36,27 @@ export default function Assignments() {
             aria-label="Search for Assignment"
           />
         </div>
-        <Button
-          variant="danger"
-          size="lg"
-          id="wd-add-assignment"
-          className="float-end"
-        >
-          <FaPlus className="me-2 position-relative" style={{ bottom: "1px" }} />
-          Assignment
-        </Button>
-        <Button
-          variant="secondary"
-          size="lg"
-          id="wd-add-assignment-group"
-          className="float-end me-1"
-        >
-          <FaPlus className="me-2 position-relative" style={{ bottom: "1px" }} />
-          Group
-        </Button>
+        {canEditAssignments && (
+          <div className="float-end">
+            <Button
+              variant="secondary"
+              size="lg"
+              id="wd-add-assignment-group"
+              className="me-1"
+            >
+              <FaPlus className="me-2 position-relative" style={{ bottom: "1px" }} />
+              Group
+            </Button>
+            <Link
+              href={`/courses/${cid}/assignments/new`}
+              className="btn btn-danger btn-lg"
+              id="wd-add-assignment"
+            >
+              <FaPlus className="me-2 position-relative" style={{ bottom: "1px" }} />
+              Assignment
+            </Link>
+          </div>
+        )}
       </div>
 
       <div className="wd-assignments-section mb-4">
@@ -60,25 +69,53 @@ export default function Assignments() {
           </Button>
         </div>
         <ListGroup id="wd-assignment-list" className="rounded-0">
-          {assignments.map((assignment) => (
+          {courseAssignments.map((assignment: any) => (
             <ListGroupItem
               key={assignment._id}
-              className="wd-assignment-item border-gray p-3 ps-3"
+              className="wd-assignment-item border-gray p-3 ps-3 align-items-center d-flex"
             >
-              <Link
-                href={`/courses/${cid}/assignments/${assignment._id}`}
-                className="wd-assignment-link text-decoration-none text-dark"
-              >
-                <div className="wd-assignment-title fw-bold">
-                  {assignment.title}
-                </div>
-                <div className="wd-assignment-subtext text-secondary small">
-                  <span className="text-danger">Multiple Modules</span> |{" "}
-                  <strong>Not available until</strong>{" "}
-                  {assignment.availableDate} | <strong>Due</strong>{" "}
-                  {assignment.dueDate} | {assignment.points} pts
-                </div>
-              </Link>
+              <div className="flex-grow-1">
+                {canEditAssignments ? (
+                  <Link
+                    href={`/courses/${cid}/assignments/${assignment._id}`}
+                    className="wd-assignment-link text-decoration-none text-dark"
+                  >
+                    <div className="wd-assignment-title fw-bold">
+                      {assignment.title}
+                    </div>
+                    <div className="wd-assignment-subtext text-secondary small">
+                      <span className="text-danger">Multiple Modules</span> |{" "}
+                      <strong>Available from</strong> {assignment.availableDate} |{" "}
+                      <strong>Available until</strong>{" "}
+                      {assignment.availableUntil || assignment.dueDate} |{" "}
+                      <strong>Due</strong> {assignment.dueDate} | {assignment.points} pts
+                    </div>
+                  </Link>
+                ) : (
+                  <div className="wd-assignment-title fw-bold">
+                    {assignment.title}
+                  </div>
+                  <div className="wd-assignment-subtext text-secondary small">
+                    <span className="text-danger">Multiple Modules</span> |{" "}
+                    <strong>Available from</strong> {assignment.availableDate} |{" "}
+                    <strong>Available until</strong>{" "}
+                    {assignment.availableUntil || assignment.dueDate} |{" "}
+                    <strong>Due</strong> {assignment.dueDate} | {assignment.points} pts
+                  </div>
+                )}
+              </div>
+              {canEditAssignments && (
+                <FaTrash
+                  className="text-danger mb-1 fs-5"
+                  style={{ cursor: "pointer" }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (confirm("Are you sure you want to delete this assignment?")) {
+                      dispatch(deleteAssignment(assignment._id));
+                    }
+                  }}
+                />
+              )}
             </ListGroupItem>
           ))}
         </ListGroup>

@@ -7,6 +7,7 @@ import { FaInbox, FaRegCircleUser } from "react-icons/fa6";
 import { ListGroup, ListGroupItem } from "react-bootstrap";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSelector } from "react-redux";
 
 function isActive(path: string, pathname: string | null): boolean {
   if (!pathname) return false;
@@ -21,6 +22,7 @@ function isActive(path: string, pathname: string | null): boolean {
 
 export default function KambazNavigation() {
   const pathname = usePathname();
+  const { currentUser } = useSelector((state: any) => state.accountReducer);
 
   const navItemClass = (path: string) => {
     const active = isActive(path, pathname);
@@ -55,7 +57,7 @@ export default function KambazNavigation() {
       <br />
       <ListGroupItem className={navItemClass("/account")}>
         <Link
-          href="/account"
+          href={currentUser ? "/account/profile" : "/account/signin"}
           id="wd-account-link"
           className={linkClass("/account")}
         >
