@@ -10,13 +10,55 @@ import {
   Button,
 } from "react-bootstrap";
 import { FaCalendarAlt } from "react-icons/fa";
-import { useParams } from "next/navigation";
-import * as db from "../../../../database";
+import { useParams, useRouter } from "next/navigation";
+import { useSelector, useDispatch } from "react-redux";
+import { useEffect, useState } from "react";
+import { addAssignment, updateAssignment } from "../reducer";
 
 export default function AssignmentEditor() {
-  const { cid, aid } = useParams();
-  const assignment = db.assignments.find((a: any) => a._id === aid);
-  const course = db.courses.find((course: any) => course._id === cid);
+  const { cid, aid } = useParams() as { cid: string; aid: string };
+  const { assignments } = useSelector((state: any) => state.assignmentsReducer);
+  const { currentUser } = useSelector((state: any) => state.accountReducer);
+  const dispatch = useDispatch();
+  const router = useRouter();
+
+  const existingAssignment = assignments.find((a: any) => a._id === aid);
+  const [assignment, setAssignment] = useState<any>(
+    existingAssignment || {
+      title: "",
+      description: "",
+      points: 100,
+      dueDate: "",
+      availableDate: "",
+      availableUntil: "",
+      course: cid,
+    }
+  );
+
+  useEffect(() => {
+    if (currentUser?.role !== "FACULTY") {
+      router.replace(`/courses/${cid}/assignments`);
+    }
+  }, [currentUser, router, cid]);
+
+  useEffect(() => {
+    if (aid !== "new" && !existingAssignment) {
+      router.replace(`/courses/${cid}/assignments`);
+    }
+  }, [aid, cid, existingAssignment, router]);
+
+  const handleSave = () => {
+    if (aid === "new") {
+      dispatch(addAssignment(assignment));
+    } else {
+      dispatch(updateAssignment(assignment));
+    }
+    router.push(`/courses/${cid}/assignments`);
+  };
+
+  if (currentUser?.role !== "FACULTY") {
+    return null;
+  }
 
   return (
     <div id="wd-assignments-editor" className="mb-4">
@@ -42,7 +84,8 @@ export default function AssignmentEditor() {
           <FormControl
             id="wd-name"
             type="text"
-            defaultValue={assignment?.title || ""}
+            value={assignment.title}
+            onChange={(e) => setAssignment({ ...assignment, title: e.target.value })}
           />
         </div>
 
@@ -53,7 +96,8 @@ export default function AssignmentEditor() {
             as="textarea"
             rows={5}
             className="border"
-            defaultValue={assignment?.description || ""}
+            value={assignment.description}
+            onChange={(e) => setAssignment({ ...assignment, description: e.target.value })}
           />
         </div>
 
@@ -62,7 +106,8 @@ export default function AssignmentEditor() {
           <FormControl
             id="wd-points"
             type="number"
-            defaultValue={assignment?.points || 100}
+            value={assignment.points}
+            onChange={(e) => setAssignment({ ...assignment, points: parseInt(e.target.value) || 0 })}
             style={{ maxWidth: "120px" }}
           />
         </div>
@@ -154,7 +199,8 @@ export default function AssignmentEditor() {
               <FormControl
                 id="wd-due-date"
                 type="datetime-local"
-                defaultValue={assignment?.dueDate || ""}
+                value={assignment.dueDate}
+                onChange={(e) => setAssignment({ ...assignment, dueDate: e.target.value })}
               />
               <span className="input-group-text">
                 <FaCalendarAlt className="text-secondary" />
@@ -172,7 +218,8 @@ export default function AssignmentEditor() {
               <FormControl
                 id="wd-available-from"
                 type="datetime-local"
-                defaultValue={assignment?.availableDate || ""}
+                value={assignment.availableDate}
+                onChange={(e) => setAssignment({ ...assignment, availableDate: e.target.value })}
               />
               <span className="input-group-text">
                 <FaCalendarAlt className="text-secondary" />
@@ -187,7 +234,12 @@ export default function AssignmentEditor() {
               Until
             </FormLabel>
             <div className="input-group">
-              <FormControl id="wd-until" type="datetime-local" />
+              <FormControl
+                id="wd-until"
+                type="datetime-local"
+                value={assignment.availableUntil || ""}
+                onChange={(e) => setAssignment({ ...assignment, availableUntil: e.target.value })}
+              />
               <span className="input-group-text">
                 <FaCalendarAlt className="text-secondary" />
               </span>
@@ -202,12 +254,12 @@ export default function AssignmentEditor() {
           >
             Cancel
           </Link>
-          <Link
-            href={`/courses/${cid}/assignments`}
-            className="btn btn-danger"
+          <Button
+            variant="danger"
+            onClick={handleSave}
           >
             Save
-          </Link>
+          </Button>
         </div>
       </Form>
     </div>

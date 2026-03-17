@@ -6,7 +6,8 @@
     "description": "Calculate fuel required.",
     "points": 100,
     "dueDate": "2024-05-13T23:59:00",
-    "availableDate": "2024-05-06T12:00:00"
+    "availableDate": "2024-05-06T12:00:00",
+    "availableUntil": "2024-05-13T23:59:00"
   },
   {
     "_id": "A102",
@@ -15,7 +16,8 @@
     "description": "Analyze combustion process.",
     "points": 100,
     "dueDate": "2024-05-20T23:59:00",
-    "availableDate": "2024-05-13T12:00:00"
+    "availableDate": "2024-05-13T12:00:00",
+    "availableUntil": "2024-05-20T23:59:00"
   },
   {
     "_id": "A103",
@@ -24,7 +26,8 @@
     "description": "Design a rocket nozzle.",
     "points": 100,
     "dueDate": "2024-05-27T23:59:00",
-    "availableDate": "2024-05-20T12:00:00"
+    "availableDate": "2024-05-20T12:00:00",
+    "availableUntil": "2024-05-27T23:59:00"
   },
   {
     "_id": "A201",
@@ -33,7 +36,8 @@
     "description": "Basic aerodynamics.",
     "points": 100,
     "dueDate": "2024-05-13T23:59:00",
-    "availableDate": "2024-05-06T12:00:00"
+    "availableDate": "2024-05-06T12:00:00",
+    "availableUntil": "2024-05-13T23:59:00"
   },
   {
     "_id": "A202",
@@ -42,7 +46,8 @@
     "description": "Analyze airflow.",
     "points": 100,
     "dueDate": "2024-05-20T23:59:00",
-    "availableDate": "2024-05-13T12:00:00"
+    "availableDate": "2024-05-13T12:00:00",
+    "availableUntil": "2024-05-20T23:59:00"
   },
   {
     "_id": "A203",
@@ -51,7 +56,8 @@
     "description": "Experiment report.",
     "points": 100,
     "dueDate": "2024-05-27T23:59:00",
-    "availableDate": "2024-05-20T12:00:00"
+    "availableDate": "2024-05-20T12:00:00",
+    "availableUntil": "2024-05-27T23:59:00"
   },
   {
     "_id": "A301",
@@ -60,7 +66,8 @@
     "description": "Basic spacecraft design.",
     "points": 100,
     "dueDate": "2024-05-13T23:59:00",
-    "availableDate": "2024-05-06T12:00:00"
+    "availableDate": "2024-05-06T12:00:00",
+    "availableUntil": "2024-05-13T23:59:00"
   },
   {
     "_id": "A302",
@@ -69,7 +76,8 @@
     "description": "Calculate orbits.",
     "points": 100,
     "dueDate": "2024-05-20T23:59:00",
-    "availableDate": "2024-05-13T12:00:00"
+    "availableDate": "2024-05-13T12:00:00",
+    "availableUntil": "2024-05-20T23:59:00"
   },
   {
     "_id": "A303",
@@ -78,6 +86,7 @@
     "description": "Systems design.",
     "points": 100,
     "dueDate": "2024-05-27T23:59:00",
-    "availableDate": "2024-05-20T12:00:00"
+    "availableDate": "2024-05-20T12:00:00",
+    "availableUntil": "2024-05-27T23:59:00"
   }
 ]

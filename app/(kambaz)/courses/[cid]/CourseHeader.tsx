@@ -3,11 +3,12 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FaBars } from "react-icons/fa6";
-import * as db from "../../database";
+import { useSelector } from "react-redux";
 
-export default function CourseHeader({ cid }: { cid: string }) {
+export default function CourseHeader({ cid, toggleNav }: { cid: string; toggleNav?: () => void }) {
   const pathname = usePathname();
-  const course = db.courses.find((course: any) => course._id === cid);
+  const { courses } = useSelector((state: any) => state.coursesReducer);
+  const course = courses.find((course: any) => course._id === cid);
   const courseLabel = course ? course.name : "Course Not Found";
 
   const segments: { label: string; href: string }[] = [
@@ -45,6 +46,7 @@ export default function CourseHeader({ cid }: { cid: string }) {
         className="me-3 fs-4 text-secondary"
         role="button"
         aria-label="Menu"
+        onClick={toggleNav}
       />
       <nav aria-label="breadcrumb">
         <ol className="breadcrumb mb-0 flex-wrap">
