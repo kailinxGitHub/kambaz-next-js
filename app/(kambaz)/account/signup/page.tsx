@@ -1,14 +1,8 @@
 "use client";
 import Link from "next/link";
 import { FormControl } from "react-bootstrap";
-import { useState, useEffect } from "react";
 
 export default function Signup() {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-
-  if (!mounted) return null;
-
   return (
     <div id="wd-signup-screen" className="p-4" style={{ maxWidth: "400px" }}>
       <h1 className="mb-4">Sign up</h1>

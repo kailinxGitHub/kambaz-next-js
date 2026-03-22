@@ -64,9 +64,11 @@ export default function Assignments() {
           <h3 className="wd-assignments-title mb-0 fs-5 fw-bold">
             ASSIGNMENTS 40% of Total
           </h3>
-          <Button variant="secondary" size="sm">
-            <BsPlus className="fs-4" />
-          </Button>
+          {canEditAssignments && (
+            <Button variant="secondary" size="sm">
+              <BsPlus className="fs-4" />
+            </Button>
+          )}
         </div>
         <ListGroup id="wd-assignment-list" className="rounded-0">
           {courseAssignments.map((assignment: any) => (

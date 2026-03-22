@@ -10,13 +10,8 @@ import { useRouter } from "next/navigation";
 export default function Signin() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [mounted, setMounted] = useState(false);
   const dispatch = useDispatch();
   const router = useRouter();
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const handleSignin = () => {
     const user = db.users.find(
@@ -25,10 +20,10 @@ export default function Signin() {
     if (user) {
       dispatch(setCurrentUser(user));
       router.push("/dashboard");
+    } else {
+      alert("Invalid credentials. Try alice/alice123 or bob/bob123");
     }
   };
-
-  if (!mounted) return null;
 
   return (
     <div id="wd-signin-screen" className="p-4" style={{ maxWidth: "400px" }}>
