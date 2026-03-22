@@ -12,10 +12,7 @@ export default function Profile() {
   const router = useRouter();
   const [profile, setProfile] = useState<any>({});
 
-  const [mounted, setMounted] = useState(false);
-
   useEffect(() => {
-    setMounted(true);
     if (!currentUser) {
       router.push("/account/signin");
     } else {
@@ -23,7 +20,7 @@ export default function Profile() {
     }
   }, [currentUser, router]);
 
-  if (!mounted || !currentUser) return null;
+  if (!currentUser) return null;
   return (
     <div id="wd-profile-screen" className="p-4" style={{ maxWidth: "400px" }}>
       <h1 className="mb-4">Profile</h1>
