@@ -4,16 +4,22 @@ export default function ModuleEditor({
   moduleName,
   setModuleName,
   addModule,
-  verifyAndAddModule
+  show,
+  handleClose,
 }: {
   dialogTitle: string;
   moduleName: string;
   setModuleName: (name: string) => void;
   addModule: () => void;
-  verifyAndAddModule: () => void;
+  show: boolean;
+  handleClose: () => void;
 }) {
   return (
-    <Modal show={true} onHide={() => setModuleName("")} backdrop="static">
+    <Modal
+      id="wd-add-module-dialog"
+      show={show}
+      onHide={handleClose}
+    >
       <Modal.Header closeButton>
         <Modal.Title>{dialogTitle}</Modal.Title>
       </Modal.Header>
@@ -26,10 +32,16 @@ export default function ModuleEditor({
         />
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={() => setModuleName("")}>
+        <Button variant="secondary" onClick={handleClose}>
           Cancel
         </Button>
-        <Button variant="primary" onClick={verifyAndAddModule}>
+        <Button
+          variant="primary"
+          onClick={() => {
+            addModule();
+            handleClose();
+          }}
+        >
           Add Module
         </Button>
       </Modal.Footer>

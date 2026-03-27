@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { assignments } from "../../../database";
+import { v4 as uuidv4 } from "uuid";
 
 const initialState = {
   assignments: assignments,
@@ -11,7 +12,7 @@ const assignmentsSlice = createSlice({
   reducers: {
     addAssignment: (state, { payload: assignment }) => {
       const newAssignment: any = {
-        _id: new Date().getTime().toString(),
+        _id: uuidv4(),
         course: assignment.course,
         ...assignment,
       };

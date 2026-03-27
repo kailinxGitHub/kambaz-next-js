@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   Button,
   Dropdown,
@@ -20,6 +21,10 @@ export default function ModulesControls({
   setModuleName: (title: string) => void;
   addModule: () => void;
 }) {
+  const [show, setShow] = useState(false);
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+
   return (
     <div id="wd-modules-controls" className="text-nowrap">
       <Button
@@ -27,25 +32,19 @@ export default function ModulesControls({
         size="lg"
         className="me-1 float-end"
         id="wd-add-module-btn"
-        data-bs-toggle="modal"
-        data-bs-target="#wd-add-module-dialog"
+        onClick={handleShow}
       >
         <FaPlus className="position-relative me-2" style={{ bottom: "1px" }} />
         Module
       </Button>
-      <div className="modal" id="wd-add-module-dialog" tabIndex={-1}>
-        <div className="modal-dialog">
-          <ModuleEditor
-            dialogTitle="Add Module"
-            moduleName={moduleName}
-            setModuleName={setModuleName}
-            addModule={addModule}
-            verifyAndAddModule={() => {
-              addModule();
-            }}
-          />
-        </div>
-      </div>
+      <ModuleEditor
+        dialogTitle="Add Module"
+        moduleName={moduleName}
+        setModuleName={setModuleName}
+        show={show}
+        handleClose={handleClose}
+        addModule={addModule}
+      />
       <Dropdown className="float-end me-2">
         <DropdownToggle variant="secondary" size="lg" id="wd-publish-all-btn">
           <GreenCheckmark /> Publish All
