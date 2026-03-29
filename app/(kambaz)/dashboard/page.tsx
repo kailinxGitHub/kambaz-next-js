@@ -11,19 +11,26 @@ import {
   Button,
 } from "react-bootstrap";
 import { useSelector, useDispatch } from "react-redux";
-import { useState } from "react";
-import { addCourse, updateCourse, deleteCourse } from "../courses/reducer";
+import { useEffect, useState } from "react";
+import {
+  createCourseAsync,
+  updateCourseAsync,
+  deleteCourseAsync,
+  fetchCourses,
+} from "../courses/reducer";
 import { enroll, unenroll } from "../enrollments/reducer";
-import * as db from "../database";
+import { canManageCourses } from "@/lib/kambaz/permissions";
 
 export default function Dashboard() {
-  const { courses } = useSelector((state: any) => state.coursesReducer);
+  const { courses, status: coursesStatus } = useSelector(
+    (state: any) => state.coursesReducer
+  );
   const { currentUser } = useSelector((state: any) => state.accountReducer);
   const { enrollments } = useSelector((state: any) => state.enrollmentsReducer);
   const dispatch = useDispatch();
   const [enrolling, setEnrolling] = useState(false);
-  const isFaculty = currentUser?.role === "FACULTY";
-  const shouldShowAllCourses = isFaculty || enrolling || !currentUser;
+  const isCourseManager = canManageCourses(currentUser);
+  const shouldShowAllCourses = isCourseManager || enrolling || !currentUser;
   const visibleCourses = shouldShowAllCourses
     ? courses
     : courses.filter((course: any) =>
@@ -42,11 +49,47 @@ export default function Dashboard() {
     image: "/images/reactjs.jpg",
   });
 
+  useEffect(() => {
+    if (coursesStatus === "idle") {
+      dispatch(fetchCourses() as any);
+    }
+  }, [coursesStatus, dispatch]);
+
+  const handleAddCourse = async () => {
+    try {
+      await dispatch(
+        createCourseAsync({ course, role: currentUser?.role }) as any
+      ).unwrap();
+    } catch (error: any) {
+      alert(error.message ?? "Unable to create course.");
+    }
+  };
+
+  const handleUpdateCourse = async () => {
+    try {
+      await dispatch(
+        updateCourseAsync({ course, role: currentUser?.role }) as any
+      ).unwrap();
+    } catch (error: any) {
+      alert(error.message ?? "Unable to update course.");
+    }
+  };
+
+  const handleDeleteCourse = async (courseId: string) => {
+    try {
+      await dispatch(
+        deleteCourseAsync({ courseId, role: currentUser?.role }) as any
+      ).unwrap();
+    } catch (error: any) {
+      alert(error.message ?? "Unable to delete course.");
+    }
+  };
+
   return (
     <div id="wd-dashboard">
       <h1 id="wd-dashboard-title">
         Dashboard
-        {!isFaculty && currentUser && (
+        {!isCourseManager && currentUser && (
           <Button
             variant="primary"
             className="float-end"
@@ -57,7 +100,7 @@ export default function Dashboard() {
         )}
       </h1>
       <hr />
-      {isFaculty && (
+      {isCourseManager && (
         <>
           <h5>
             New Course
@@ -65,7 +108,7 @@ export default function Dashboard() {
           variant="primary"
           className="float-end"
           id="wd-add-new-course-click"
-          onClick={() => dispatch(addCourse(course))}
+          onClick={handleAddCourse}
         >
           Add
         </Button>
@@ -73,7 +116,7 @@ export default function Dashboard() {
           variant="warning"
           className="float-end me-2"
           id="wd-update-course-click"
-          onClick={() => dispatch(updateCourse(course))}
+          onClick={handleUpdateCourse}
         >
           Update
         </Button>
@@ -137,7 +180,7 @@ export default function Dashboard() {
                       {course.description}
                     </CardText>
                     <Button variant="primary">Go</Button>
-                    {isFaculty && (
+                    {isCourseManager && (
                       <>
                         <Button
                           variant="danger"
@@ -145,7 +188,7 @@ export default function Dashboard() {
                           id="wd-delete-course-click"
                           onClick={(e) => {
                             e.preventDefault();
-                            dispatch(deleteCourse(course._id));
+                            void handleDeleteCourse(course._id);
                           }}
                         >
                           Delete
@@ -163,7 +206,7 @@ export default function Dashboard() {
                         </Button>
                       </>
                     )}
-                    {!isFaculty && currentUser && <Button
+                    {!isCourseManager && currentUser && <Button
                         variant={isEnrolled ? "danger" : "success"}
                         className="float-end"
                         onClick={(e) => {

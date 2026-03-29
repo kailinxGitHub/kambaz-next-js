@@ -4,6 +4,7 @@ import { useParams, useRouter, usePathname } from "next/navigation";
 import { useSelector } from "react-redux";
 import CourseNavigation from "./Navigation";
 import CourseHeader from "./CourseHeader";
+import { canAccessCourse } from "@/lib/kambaz/permissions";
 
 export default function CoursesLayout({
   children,
@@ -21,25 +22,23 @@ export default function CoursesLayout({
     (enrollment: any) =>
       enrollment.user === currentUser?._id && enrollment.course === cid
   );
-  const canAccessCourse =
-    !!currentUser &&
-    (currentUser.role === "FACULTY" || isEnrolled);
+  const userCanAccessCourse = canAccessCourse(currentUser, isEnrolled);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
   useEffect(() => {
-    if (mounted && !canAccessCourse) {
+    if (mounted && !userCanAccessCourse) {
       router.push("/dashboard");
     }
-  }, [mounted, canAccessCourse, cid, router, pathname]);
+  }, [mounted, userCanAccessCourse, cid, router, pathname]);
 
   if (!mounted) {
     return null;
   }
 
-  if (!canAccessCourse) {
+  if (!userCanAccessCourse) {
     return null;
   }
 

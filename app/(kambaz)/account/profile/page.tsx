@@ -96,6 +96,8 @@ export default function Profile() {
         >
           <option value="USER">User</option>
           <option value="ADMIN">Admin</option>
+          <option value="TA">TA</option>
+          <option value="INSTRUCTOR">Instructor</option>
           <option value="FACULTY">Faculty</option>
           <option value="STUDENT">Student</option>
         </FormSelect>

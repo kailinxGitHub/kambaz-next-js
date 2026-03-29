@@ -17,12 +17,11 @@ export default function Signin() {
     const user = db.users.find(
       (u: any) => u.username === username && u.password === password
     );
-    if (user) {
-      dispatch(setCurrentUser(user));
-      router.push("/dashboard");
-    } else {
-      alert("Invalid credentials. Try alice/alice123 or bob/bob123");
+    if (!user) {
+      return;
     }
+    dispatch(setCurrentUser(user));
+    router.push("/dashboard");
   };
 
   return (

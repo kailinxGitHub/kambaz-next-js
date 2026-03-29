@@ -4,12 +4,14 @@ import KambazNavigation from "./Navigation";
 import "./styles.css";
 import { Provider } from "react-redux";
 import store from "./store";
+import SessionSync from "./account/SessionSync";
 
 export default function KambazLayout({
   children,
 }: Readonly<{ children: ReactNode }>) {
   return (
     <Provider store={store}>
+      <SessionSync />
       <div id="wd-kambaz">
         <div className="d-flex">
           <div>

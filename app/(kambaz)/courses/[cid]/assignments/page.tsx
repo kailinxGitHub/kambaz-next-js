@@ -8,15 +8,35 @@ import { BsPlus } from "react-icons/bs";
 import { FaTrash } from "react-icons/fa";
 import { useParams } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
-import { deleteAssignment } from "./reducer";
+import { useEffect } from "react";
+import { deleteAssignmentAsync, fetchAssignments } from "./reducer";
+import { canManageAssignments } from "@/lib/kambaz/permissions";
 
 export default function Assignments() {
   const { cid } = useParams();
-  const { assignments } = useSelector((state: any) => state.assignmentsReducer);
+  const { assignments, status: assignmentsStatus } = useSelector(
+    (state: any) => state.assignmentsReducer
+  );
   const { currentUser } = useSelector((state: any) => state.accountReducer);
   const dispatch = useDispatch();
   const courseAssignments = assignments.filter((a: any) => a.course === cid);
-  const canEditAssignments = currentUser?.role === "FACULTY";
+  const canEditAssignments = canManageAssignments(currentUser);
+
+  useEffect(() => {
+    if (assignmentsStatus === "idle") {
+      dispatch(fetchAssignments() as any);
+    }
+  }, [assignmentsStatus, dispatch]);
+
+  const handleDeleteAssignment = async (assignmentId: string) => {
+    try {
+      await dispatch(
+        deleteAssignmentAsync({ assignmentId, role: currentUser?.role }) as any
+      ).unwrap();
+    } catch (error: any) {
+      alert(error.message ?? "Unable to delete assignment.");
+    }
+  };
 
   return (
     <div id="wd-assignments" className="mb-4">
@@ -76,7 +96,7 @@ export default function Assignments() {
               key={assignment._id}
               className="wd-assignment-item border-gray p-3 ps-3 align-items-center d-flex"
             >
-              <div className="flex-grow-1">
+              <div className="grow">
                 {canEditAssignments ? (
                   <Link
                     href={`/courses/${cid}/assignments/${assignment._id}`}
@@ -115,7 +135,7 @@ export default function Assignments() {
                   onClick={(e) => {
                     e.preventDefault();
                     if (confirm("Are you sure you want to delete this assignment?")) {
-                      dispatch(deleteAssignment(assignment._id));
+                      void handleDeleteAssignment(assignment._id);
                     }
                   }}
                 />
