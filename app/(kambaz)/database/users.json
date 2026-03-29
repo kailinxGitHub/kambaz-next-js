@@ -84,6 +84,48 @@
     "totalActivity": "15:00:00"
   },
   {
+    "_id": "791",
+    "username": "admin",
+    "password": "admin123",
+    "firstName": "Ada",
+    "lastName": "Admin",
+    "email": "admin@kambaz.edu",
+    "dob": "1980-01-01",
+    "loginId": "admin",
+    "section": "ADMIN",
+    "role": "ADMIN",
+    "lastActivity": "2020-10-08",
+    "totalActivity": "17:00:00"
+  },
+  {
+    "_id": "792",
+    "username": "ta",
+    "password": "ta123",
+    "firstName": "Taylor",
+    "lastName": "Assistant",
+    "email": "ta@kambaz.edu",
+    "dob": "1992-02-02",
+    "loginId": "ta",
+    "section": "TA",
+    "role": "TA",
+    "lastActivity": "2020-10-09",
+    "totalActivity": "18:00:00"
+  },
+  {
+    "_id": "793",
+    "username": "instructor",
+    "password": "instructor123",
+    "firstName": "Indigo",
+    "lastName": "Instructor",
+    "email": "instructor@kambaz.edu",
+    "dob": "1988-03-03",
+    "loginId": "instructor",
+    "section": "INSTRUCTOR",
+    "role": "INSTRUCTOR",
+    "lastActivity": "2020-10-10",
+    "totalActivity": "19:00:00"
+  },
+  {
     "_id": "890",
     "username": "heidi",
     "password": "heidi123",

@@ -13,50 +13,93 @@ import { FaCalendarAlt } from "react-icons/fa";
 import { useParams, useRouter } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
-import { addAssignment, updateAssignment } from "../reducer";
+import {
+  createAssignmentAsync,
+  fetchAssignments,
+  updateAssignmentAsync,
+} from "../reducer";
+import { canManageAssignments } from "@/lib/kambaz/permissions";
 
 export default function AssignmentEditor() {
   const { cid, aid } = useParams() as { cid: string; aid: string };
-  const { assignments } = useSelector((state: any) => state.assignmentsReducer);
+  const { assignments, status: assignmentsStatus } = useSelector(
+    (state: any) => state.assignmentsReducer
+  );
   const { currentUser } = useSelector((state: any) => state.accountReducer);
   const dispatch = useDispatch();
   const router = useRouter();
+  const canEditAssignments = canManageAssignments(currentUser);
 
   const existingAssignment = assignments.find((a: any) => a._id === aid);
+  const emptyAssignment = {
+    title: "",
+    description: "",
+    points: 100,
+    dueDate: "",
+    availableDate: "",
+    availableUntil: "",
+    course: cid,
+  };
   const [assignment, setAssignment] = useState<any>(
-    existingAssignment || {
-      title: "",
-      description: "",
-      points: 100,
-      dueDate: "",
-      availableDate: "",
-      availableUntil: "",
-      course: cid,
-    }
+    existingAssignment || emptyAssignment
   );
 
   useEffect(() => {
-    if (currentUser?.role !== "FACULTY") {
-      router.replace(`/courses/${cid}/assignments`);
+    if (assignmentsStatus === "idle") {
+      dispatch(fetchAssignments() as any);
     }
-  }, [currentUser, router, cid]);
+  }, [assignmentsStatus, dispatch]);
 
   useEffect(() => {
-    if (aid !== "new" && !existingAssignment) {
+    if (!canEditAssignments) {
       router.replace(`/courses/${cid}/assignments`);
     }
-  }, [aid, cid, existingAssignment, router]);
+  }, [canEditAssignments, router, cid]);
 
-  const handleSave = () => {
+  useEffect(() => {
     if (aid === "new") {
-      dispatch(addAssignment(assignment));
-    } else {
-      dispatch(updateAssignment(assignment));
+      setAssignment(emptyAssignment);
+      return;
     }
-    router.push(`/courses/${cid}/assignments`);
+    if (existingAssignment) {
+      setAssignment(existingAssignment);
+    }
+  }, [aid, existingAssignment, cid]);
+
+  useEffect(() => {
+    if (
+      aid !== "new" &&
+      assignmentsStatus === "succeeded" &&
+      !existingAssignment
+    ) {
+      router.replace(`/courses/${cid}/assignments`);
+    }
+  }, [aid, cid, existingAssignment, router, assignmentsStatus]);
+
+  const handleSave = async () => {
+    try {
+      if (aid === "new") {
+        await dispatch(
+          createAssignmentAsync({
+            assignment,
+            role: currentUser?.role,
+          }) as any
+        ).unwrap();
+      } else {
+        await dispatch(
+          updateAssignmentAsync({
+            assignment,
+            role: currentUser?.role,
+          }) as any
+        ).unwrap();
+      }
+      router.push(`/courses/${cid}/assignments`);
+    } catch (error: any) {
+      alert(error.message ?? "Unable to save assignment.");
+    }
   };
 
-  if (currentUser?.role !== "FACULTY") {
+  if (!canEditAssignments) {
     return null;
   }
 
