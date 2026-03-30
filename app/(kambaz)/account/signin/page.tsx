@@ -1,32 +1,43 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { FormControl } from "react-bootstrap";
-import * as db from "../../database";
-import { useDispatch } from "react-redux";
+import { signin } from "../client";
 import { setCurrentUser } from "../reducer";
 import { useRouter } from "next/navigation";
+import { useAppDispatch, useAppSelector } from "../../hooks";
 
 export default function Signin() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const dispatch = useDispatch();
+  const [errorMessage, setErrorMessage] = useState("");
+  const { currentUser, isLoaded } = useAppSelector((state) => state.accountReducer);
+  const dispatch = useAppDispatch();
   const router = useRouter();
 
-  const handleSignin = () => {
-    const user = db.users.find(
-      (u: any) => u.username === username && u.password === password
-    );
-    if (!user) {
-      return;
+  useEffect(() => {
+    if (isLoaded && currentUser) {
+      router.replace("/dashboard");
     }
-    dispatch(setCurrentUser(user));
-    router.push("/dashboard");
+  }, [currentUser, isLoaded, router]);
+
+  const handleSignin = async () => {
+    try {
+      const user = await signin({ username, password });
+      dispatch(setCurrentUser(user));
+      setErrorMessage("");
+      router.push("/dashboard");
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error ? error.message : "Unable to sign in."
+      );
+    }
   };
 
   return (
     <div id="wd-signin-screen" className="p-4" style={{ maxWidth: "400px" }}>
       <h1 className="mb-4">Sign in</h1>
+      {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
       <FormControl
         id="wd-username"
         placeholder="username"

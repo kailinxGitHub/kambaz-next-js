@@ -3,12 +3,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FaBars } from "react-icons/fa6";
-import { useSelector } from "react-redux";
+import type { Course } from "@/lib/kambaz/client-api";
+import { useAppSelector } from "../../hooks";
 
 export default function CourseHeader({ cid, toggleNav }: { cid: string; toggleNav?: () => void }) {
   const pathname = usePathname();
-  const { courses } = useSelector((state: any) => state.coursesReducer);
-  const course = courses.find((course: any) => course._id === cid);
+  const { courses } = useAppSelector((state) => state.coursesReducer);
+  const course = courses.find((currentCourse: Course) => currentCourse._id === cid);
   const courseLabel = course ? course.name : "Course Not Found";
 
   const segments: { label: string; href: string }[] = [

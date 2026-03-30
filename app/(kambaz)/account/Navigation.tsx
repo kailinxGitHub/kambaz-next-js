@@ -2,11 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useSelector } from "react-redux";
+import { useAppSelector } from "../hooks";
 
 export default function AccountNavigation() {
   const pathname = usePathname();
-  const { currentUser } = useSelector((state: any) => state.accountReducer);
+  const { currentUser } = useAppSelector((state) => state.accountReducer);
   const links = currentUser
     ? [{ href: "/account/profile", label: "Profile" }]
     : [

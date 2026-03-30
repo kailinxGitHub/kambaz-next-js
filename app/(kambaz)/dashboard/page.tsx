@@ -14,11 +14,15 @@ import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
 import {
   createCourseAsync,
-  updateCourseAsync,
   deleteCourseAsync,
   fetchCourses,
+  fetchMyCourses,
+  updateCourseAsync,
 } from "../courses/reducer";
-import { enroll, unenroll } from "../enrollments/reducer";
+import {
+  enrollInCourseAsync,
+  unenrollFromCourseAsync,
+} from "../enrollments/reducer";
 import { canManageCourses } from "@/lib/kambaz/permissions";
 
 export default function Dashboard() {
@@ -31,15 +35,7 @@ export default function Dashboard() {
   const [enrolling, setEnrolling] = useState(false);
   const isCourseManager = canManageCourses(currentUser);
   const shouldShowAllCourses = isCourseManager || enrolling || !currentUser;
-  const visibleCourses = shouldShowAllCourses
-    ? courses
-    : courses.filter((course: any) =>
-        enrollments.some(
-          (enrollment: any) =>
-            enrollment.user === currentUser?._id &&
-            enrollment.course === course._id
-        )
-      );
+  const visibleCourses = courses;
   const [course, setCourse] = useState<any>({
     name: "New Course",
     description: "New Description",
@@ -50,16 +46,23 @@ export default function Dashboard() {
   });
 
   useEffect(() => {
-    if (coursesStatus === "idle") {
+    if (shouldShowAllCourses) {
       dispatch(fetchCourses() as any);
+      return;
     }
-  }, [coursesStatus, dispatch]);
+    dispatch(fetchMyCourses() as any);
+  }, [
+    coursesStatus,
+    currentUser?._id,
+    dispatch,
+    enrolling,
+    enrollments.length,
+    shouldShowAllCourses,
+  ]);
 
   const handleAddCourse = async () => {
     try {
-      await dispatch(
-        createCourseAsync({ course, role: currentUser?.role }) as any
-      ).unwrap();
+      await dispatch(createCourseAsync(course) as any).unwrap();
     } catch (error: any) {
       alert(error.message ?? "Unable to create course.");
     }
@@ -67,9 +70,7 @@ export default function Dashboard() {
 
   const handleUpdateCourse = async () => {
     try {
-      await dispatch(
-        updateCourseAsync({ course, role: currentUser?.role }) as any
-      ).unwrap();
+      await dispatch(updateCourseAsync(course) as any).unwrap();
     } catch (error: any) {
       alert(error.message ?? "Unable to update course.");
     }
@@ -77,9 +78,7 @@ export default function Dashboard() {
 
   const handleDeleteCourse = async (courseId: string) => {
     try {
-      await dispatch(
-        deleteCourseAsync({ courseId, role: currentUser?.role }) as any
-      ).unwrap();
+      await dispatch(deleteCourseAsync(courseId) as any).unwrap();
     } catch (error: any) {
       alert(error.message ?? "Unable to delete course.");
     }
@@ -212,9 +211,9 @@ export default function Dashboard() {
                         onClick={(e) => {
                           e.preventDefault();
                           if (isEnrolled) {
-                            dispatch(unenroll({ course: course._id, user: currentUser._id }));
+                            void dispatch(unenrollFromCourseAsync(course._id) as any);
                           } else {
-                            dispatch(enroll({ course: course._id, user: currentUser._id }));
+                            void dispatch(enrollInCourseAsync(course._id) as any);
                           }
                         }}
                       >

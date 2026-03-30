@@ -11,27 +11,30 @@ import {
 } from "react-bootstrap";
 import { FaCalendarAlt } from "react-icons/fa";
 import { useParams, useRouter } from "next/navigation";
-import { useSelector, useDispatch } from "react-redux";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   createAssignmentAsync,
   fetchAssignments,
   updateAssignmentAsync,
 } from "../reducer";
 import { canManageAssignments } from "@/lib/kambaz/permissions";
+import type { Assignment, AssignmentDraft } from "@/lib/kambaz/client-api";
+import { useAppDispatch, useAppSelector } from "../../../../hooks";
 
 export default function AssignmentEditor() {
   const { cid, aid } = useParams() as { cid: string; aid: string };
-  const { assignments, status: assignmentsStatus } = useSelector(
-    (state: any) => state.assignmentsReducer
+  const { assignments, status: assignmentsStatus } = useAppSelector(
+    (state) => state.assignmentsReducer
   );
-  const { currentUser } = useSelector((state: any) => state.accountReducer);
-  const dispatch = useDispatch();
+  const { currentUser } = useAppSelector((state) => state.accountReducer);
+  const dispatch = useAppDispatch();
   const router = useRouter();
   const canEditAssignments = canManageAssignments(currentUser);
 
-  const existingAssignment = assignments.find((a: any) => a._id === aid);
-  const emptyAssignment = {
+  const existingAssignment = assignments.find(
+    (currentAssignment: Assignment) => currentAssignment._id === aid
+  );
+  const emptyAssignment: AssignmentDraft = useMemo(() => ({
     title: "",
     description: "",
     points: 100,
@@ -39,14 +42,19 @@ export default function AssignmentEditor() {
     availableDate: "",
     availableUntil: "",
     course: cid,
-  };
-  const [assignment, setAssignment] = useState<any>(
-    existingAssignment || emptyAssignment
+  }), [cid]);
+  const [draftAssignment, setDraftAssignment] = useState<Assignment | AssignmentDraft | null>(
+    null
   );
+  const assignment =
+    draftAssignment &&
+    (aid === "new" ? !("_id" in draftAssignment) : draftAssignment._id === aid)
+      ? draftAssignment
+      : existingAssignment ?? emptyAssignment;
 
   useEffect(() => {
     if (assignmentsStatus === "idle") {
-      dispatch(fetchAssignments() as any);
+      void dispatch(fetchAssignments());
     }
   }, [assignmentsStatus, dispatch]);
 
@@ -55,16 +63,6 @@ export default function AssignmentEditor() {
       router.replace(`/courses/${cid}/assignments`);
     }
   }, [canEditAssignments, router, cid]);
-
-  useEffect(() => {
-    if (aid === "new") {
-      setAssignment(emptyAssignment);
-      return;
-    }
-    if (existingAssignment) {
-      setAssignment(existingAssignment);
-    }
-  }, [aid, existingAssignment, cid]);
 
   useEffect(() => {
     if (
@@ -79,23 +77,14 @@ export default function AssignmentEditor() {
   const handleSave = async () => {
     try {
       if (aid === "new") {
-        await dispatch(
-          createAssignmentAsync({
-            assignment,
-            role: currentUser?.role,
-          }) as any
-        ).unwrap();
+        await dispatch(createAssignmentAsync(assignment as AssignmentDraft)).unwrap();
       } else {
-        await dispatch(
-          updateAssignmentAsync({
-            assignment,
-            role: currentUser?.role,
-          }) as any
-        ).unwrap();
+        await dispatch(updateAssignmentAsync(assignment as Assignment)).unwrap();
       }
+      setDraftAssignment(null);
       router.push(`/courses/${cid}/assignments`);
-    } catch (error: any) {
-      alert(error.message ?? "Unable to save assignment.");
+    } catch (error) {
+      alert(error instanceof Error ? error.message : "Unable to save assignment.");
     }
   };
 
@@ -128,7 +117,7 @@ export default function AssignmentEditor() {
             id="wd-name"
             type="text"
             value={assignment.title}
-            onChange={(e) => setAssignment({ ...assignment, title: e.target.value })}
+            onChange={(e) => setDraftAssignment({ ...assignment, title: e.target.value })}
           />
         </div>
 
@@ -140,7 +129,9 @@ export default function AssignmentEditor() {
             rows={5}
             className="border"
             value={assignment.description}
-            onChange={(e) => setAssignment({ ...assignment, description: e.target.value })}
+            onChange={(e) =>
+              setDraftAssignment({ ...assignment, description: e.target.value })
+            }
           />
         </div>
 
@@ -150,7 +141,12 @@ export default function AssignmentEditor() {
             id="wd-points"
             type="number"
             value={assignment.points}
-            onChange={(e) => setAssignment({ ...assignment, points: parseInt(e.target.value) || 0 })}
+            onChange={(e) =>
+              setDraftAssignment({
+                ...assignment,
+                points: parseInt(e.target.value, 10) || 0,
+              })
+            }
             style={{ maxWidth: "120px" }}
           />
         </div>
@@ -243,7 +239,9 @@ export default function AssignmentEditor() {
                 id="wd-due-date"
                 type="datetime-local"
                 value={assignment.dueDate}
-                onChange={(e) => setAssignment({ ...assignment, dueDate: e.target.value })}
+                onChange={(e) =>
+                  setDraftAssignment({ ...assignment, dueDate: e.target.value })
+                }
               />
               <span className="input-group-text">
                 <FaCalendarAlt className="text-secondary" />
@@ -262,7 +260,9 @@ export default function AssignmentEditor() {
                 id="wd-available-from"
                 type="datetime-local"
                 value={assignment.availableDate}
-                onChange={(e) => setAssignment({ ...assignment, availableDate: e.target.value })}
+                onChange={(e) =>
+                  setDraftAssignment({ ...assignment, availableDate: e.target.value })
+                }
               />
               <span className="input-group-text">
                 <FaCalendarAlt className="text-secondary" />
@@ -281,7 +281,9 @@ export default function AssignmentEditor() {
                 id="wd-until"
                 type="datetime-local"
                 value={assignment.availableUntil || ""}
-                onChange={(e) => setAssignment({ ...assignment, availableUntil: e.target.value })}
+                onChange={(e) =>
+                  setDraftAssignment({ ...assignment, availableUntil: e.target.value })
+                }
               />
               <span className="input-group-text">
                 <FaCalendarAlt className="text-secondary" />
