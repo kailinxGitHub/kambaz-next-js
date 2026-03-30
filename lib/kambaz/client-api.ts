@@ -8,7 +8,6 @@ export type Course = {
   description?: string;
   startDate?: string;
   endDate?: string;
-  [key: string]: unknown;
 };
 
 export type Assignment = {
@@ -20,7 +19,6 @@ export type Assignment = {
   dueDate: string;
   availableDate: string;
   availableUntil?: string;
-  [key: string]: unknown;
 };
 
 export type AssignmentDraft = Omit<Assignment, "_id">;
@@ -37,7 +35,6 @@ export type Module = {
   name?: string;
   lessons?: ModuleLesson[];
   editing?: boolean;
-  [key: string]: unknown;
 };
 
 export type Enrollment = {

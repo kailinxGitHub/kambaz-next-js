@@ -111,7 +111,7 @@ export default function WorkingWithArraysAsynchronously() {
     }
   };
 
-  const handleEditKeyDown = async (event: KeyboardEvent<HTMLInputElement>, todo: Todo) => {
+  const handleEditKeyDown = async (event: KeyboardEvent<HTMLElement>, todo: Todo) => {
     if (event.key === "Enter") {
       await saveTodo({ ...todo, title: editedTitle });
     }

@@ -60,15 +60,14 @@ const enrollmentsSlice = createSlice({
           (enrollment) => enrollment.course !== action.payload
         );
       })
-      .addMatcher(
-        (action) =>
-          action.type === enrollInCourseAsync.rejected.type ||
-          action.type === unenrollFromCourseAsync.rejected.type,
-        (state, action) => {
-          state.error =
-            action.error?.message ?? "Unable to update enrollments.";
-        }
-      );
+      .addCase(enrollInCourseAsync.rejected, (state, action) => {
+        state.error =
+          action.error.message ?? "Unable to update enrollments.";
+      })
+      .addCase(unenrollFromCourseAsync.rejected, (state, action) => {
+        state.error =
+          action.error.message ?? "Unable to update enrollments.";
+      });
   },
 });
 
