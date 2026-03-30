@@ -1,40 +1,68 @@
 "use client";
-import { ReactNode, useState, useEffect } from "react";
-import { useParams, useRouter, usePathname } from "next/navigation";
-import { useSelector } from "react-redux";
+import { ReactNode, useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
 import CourseNavigation from "./Navigation";
 import CourseHeader from "./CourseHeader";
-import { canAccessCourse } from "@/lib/kambaz/permissions";
+import { canAccessCourse, isStaffRole } from "@/lib/kambaz/permissions";
+import { fetchMyEnrollments } from "../../enrollments/reducer";
+import type { Enrollment } from "@/lib/kambaz/client-api";
+import { useAppDispatch, useAppSelector } from "../../hooks";
 
 export default function CoursesLayout({
   children,
 }: Readonly<{ children: ReactNode }>) {
   const { cid } = useParams() as { cid: string };
   const [showNav, setShowNav] = useState(true);
-  const [mounted, setMounted] = useState(false);
   const router = useRouter();
-  const pathname = usePathname();
+  const dispatch = useAppDispatch();
 
-  const { enrollments } = useSelector((state: any) => state.enrollmentsReducer);
-  const { currentUser } = useSelector((state: any) => state.accountReducer);
+  const { enrollments, status: enrollmentsStatus } = useAppSelector(
+    (state) => state.enrollmentsReducer
+  );
+  const { currentUser, isLoaded } = useAppSelector((state) => state.accountReducer);
 
   const isEnrolled = enrollments.some(
-    (enrollment: any) =>
+    (enrollment: Enrollment) =>
       enrollment.user === currentUser?._id && enrollment.course === cid
   );
+  const isStaffMember = isStaffRole(currentUser?.role);
+  const needsEnrollmentLookup =
+    !!currentUser && !isStaffMember && enrollmentsStatus === "idle";
   const userCanAccessCourse = canAccessCourse(currentUser, isEnrolled);
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
+    if (needsEnrollmentLookup) {
+      void dispatch(fetchMyEnrollments());
+    }
+  }, [dispatch, needsEnrollmentLookup]);
 
   useEffect(() => {
-    if (mounted && !userCanAccessCourse) {
-      router.push("/dashboard");
+    if (!isLoaded) {
+      return;
     }
-  }, [mounted, userCanAccessCourse, cid, router, pathname]);
+    if (!currentUser) {
+      router.replace("/dashboard");
+      return;
+    }
+    const finishedCheckingEnrollment =
+      isStaffMember || enrollmentsStatus === "succeeded" || enrollmentsStatus === "failed";
+    if (finishedCheckingEnrollment && !userCanAccessCourse) {
+      router.replace("/dashboard");
+    }
+  }, [
+    currentUser,
+    enrollmentsStatus,
+    isLoaded,
+    isStaffMember,
+    router,
+    userCanAccessCourse,
+  ]);
 
-  if (!mounted) {
+  if (!isLoaded || !currentUser) {
+    return null;
+  }
+
+  if (!isStaffMember && (enrollmentsStatus === "loading" || enrollmentsStatus === "idle")) {
     return null;
   }
 

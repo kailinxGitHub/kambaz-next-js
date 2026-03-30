@@ -7,34 +7,35 @@ import { IoSearch } from "react-icons/io5";
 import { BsPlus } from "react-icons/bs";
 import { FaTrash } from "react-icons/fa";
 import { useParams } from "next/navigation";
-import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
 import { deleteAssignmentAsync, fetchAssignments } from "./reducer";
 import { canManageAssignments } from "@/lib/kambaz/permissions";
+import type { Assignment } from "@/lib/kambaz/client-api";
+import { useAppDispatch, useAppSelector } from "../../../hooks";
 
 export default function Assignments() {
-  const { cid } = useParams();
-  const { assignments, status: assignmentsStatus } = useSelector(
-    (state: any) => state.assignmentsReducer
+  const { cid } = useParams() as { cid: string };
+  const { assignments, status: assignmentsStatus } = useAppSelector(
+    (state) => state.assignmentsReducer
   );
-  const { currentUser } = useSelector((state: any) => state.accountReducer);
-  const dispatch = useDispatch();
-  const courseAssignments = assignments.filter((a: any) => a.course === cid);
+  const { currentUser } = useAppSelector((state) => state.accountReducer);
+  const dispatch = useAppDispatch();
+  const courseAssignments = assignments.filter(
+    (assignment: Assignment) => assignment.course === cid
+  );
   const canEditAssignments = canManageAssignments(currentUser);
 
   useEffect(() => {
     if (assignmentsStatus === "idle") {
-      dispatch(fetchAssignments() as any);
+      void dispatch(fetchAssignments());
     }
   }, [assignmentsStatus, dispatch]);
 
   const handleDeleteAssignment = async (assignmentId: string) => {
     try {
-      await dispatch(
-        deleteAssignmentAsync({ assignmentId, role: currentUser?.role }) as any
-      ).unwrap();
-    } catch (error: any) {
-      alert(error.message ?? "Unable to delete assignment.");
+      await dispatch(deleteAssignmentAsync(assignmentId)).unwrap();
+    } catch (error) {
+      alert(error instanceof Error ? error.message : "Unable to delete assignment.");
     }
   };
 
@@ -91,7 +92,7 @@ export default function Assignments() {
           )}
         </div>
         <ListGroup id="wd-assignment-list" className="rounded-0">
-          {courseAssignments.map((assignment: any) => (
+          {courseAssignments.map((assignment: Assignment) => (
             <ListGroupItem
               key={assignment._id}
               className="wd-assignment-item border-gray p-3 ps-3 align-items-center d-flex"

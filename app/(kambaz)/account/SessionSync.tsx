@@ -1,42 +1,44 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { setCurrentUser } from "./reducer";
-
-const STORAGE_KEY = "kambaz-current-user";
+import { useEffect } from "react";
+import { clearEnrollments, fetchMyEnrollments } from "../enrollments/reducer";
+import { profile } from "./client";
+import { setAuthLoaded, setCurrentUser } from "./reducer";
+import { useAppDispatch, useAppSelector } from "../hooks";
 
 export default function SessionSync() {
-  const dispatch = useDispatch();
-  const { currentUser } = useSelector((state: any) => state.accountReducer);
-  const [hydrated, setHydrated] = useState(false);
+  const dispatch = useAppDispatch();
+  const { currentUser, isLoaded } = useAppSelector((state) => state.accountReducer);
 
   useEffect(() => {
-    const storedUser = window.localStorage.getItem(STORAGE_KEY);
-
-    if (storedUser) {
+    const syncSession = async () => {
       try {
-        dispatch(setCurrentUser(JSON.parse(storedUser)));
+        const user = await profile();
+        dispatch(setCurrentUser(user));
+        await dispatch(fetchMyEnrollments());
       } catch {
-        window.localStorage.removeItem(STORAGE_KEY);
+        dispatch(setCurrentUser(null));
+        dispatch(clearEnrollments());
+      } finally {
+        dispatch(setAuthLoaded(true));
       }
-    }
+    };
 
-    setHydrated(true);
-  }, [dispatch]);
+    if (!isLoaded) {
+      void syncSession();
+    }
+  }, [dispatch, isLoaded]);
 
   useEffect(() => {
-    if (!hydrated) {
+    if (!isLoaded) {
       return;
     }
-
     if (currentUser) {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(currentUser));
+      void dispatch(fetchMyEnrollments());
       return;
     }
-
-    window.localStorage.removeItem(STORAGE_KEY);
-  }, [currentUser, hydrated]);
+    dispatch(clearEnrollments());
+  }, [currentUser, dispatch, isLoaded]);
 
   return null;
 }

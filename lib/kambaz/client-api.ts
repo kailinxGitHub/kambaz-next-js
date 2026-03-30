@@ -1,99 +1,178 @@
-const getHeaders = (role?: string | null) => {
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
+import { axiosWithCredentials } from "@/app/(kambaz)/account/client";
 
-  if (role) {
-    headers["x-user-role"] = role;
-  }
-
-  return headers;
+export type Course = {
+  _id: string;
+  image?: string;
+  name?: string;
+  number?: string;
+  description?: string;
+  startDate?: string;
+  endDate?: string;
+  [key: string]: unknown;
 };
 
-const handleResponse = async <T>(response: Response): Promise<T> => {
-  if (!response.ok) {
-    let message = "Request failed.";
+export type Assignment = {
+  _id: string;
+  course: string;
+  title: string;
+  description: string;
+  points: number;
+  dueDate: string;
+  availableDate: string;
+  availableUntil?: string;
+  [key: string]: unknown;
+};
 
-    try {
-      const data = await response.json();
-      message = data.error ?? message;
-    } catch {
-      // Ignore JSON parse failures and use the default message.
-    }
+export type AssignmentDraft = Omit<Assignment, "_id">;
 
-    throw new Error(message);
-  }
+export type ModuleLesson = {
+  _id: string;
+  name: string;
+};
 
-  return (await response.json()) as T;
+export type Module = {
+  _id: string;
+  course: string;
+  title?: string;
+  name?: string;
+  lessons?: ModuleLesson[];
+  editing?: boolean;
+  [key: string]: unknown;
+};
+
+export type Enrollment = {
+  _id: string;
+  user: string;
+  course: string;
+};
+
+export type CourseUser = {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  loginId: string;
+  section: string;
+  role: string;
+  lastActivity: string;
+  totalActivity: string;
 };
 
 export const getCourses = async () => {
-  const response = await fetch("/api/courses");
-  return handleResponse<any[]>(response);
+  const response = await axiosWithCredentials.get<Course[]>("/api/courses");
+  return response.data;
 };
 
-export const createCourse = async (course: any, role?: string | null) => {
-  const response = await fetch("/api/courses", {
-    method: "POST",
-    headers: getHeaders(role),
-    body: JSON.stringify(course),
-  });
-  return handleResponse<any>(response);
+export const findMyCourses = async () => {
+  const response = await axiosWithCredentials.get<Course[]>("/api/users/current/courses");
+  return response.data;
 };
 
-export const updateCourse = async (course: any, role?: string | null) => {
-  const response = await fetch(`/api/courses/${course._id}`, {
-    method: "PUT",
-    headers: getHeaders(role),
-    body: JSON.stringify(course),
-  });
-  return handleResponse<any>(response);
+export const createCourse = async (course: Omit<Course, "_id">) => {
+  const response = await axiosWithCredentials.post<Course>(
+    "/api/users/current/courses",
+    course
+  );
+  return response.data;
 };
 
-export const deleteCourse = async (courseId: string, role?: string | null) => {
-  const response = await fetch(`/api/courses/${courseId}`, {
-    method: "DELETE",
-    headers: getHeaders(role),
-  });
-  return handleResponse<{ courseId: string }>(response);
+export const updateCourse = async (course: Course) => {
+  const response = await axiosWithCredentials.put<Course>(
+    `/api/courses/${course._id}`,
+    course
+  );
+  return response.data;
+};
+
+export const deleteCourse = async (courseId: string) => {
+  const response = await axiosWithCredentials.delete<{ courseId: string }>(
+    `/api/courses/${courseId}`
+  );
+  return response.data;
 };
 
 export const getAssignments = async () => {
-  const response = await fetch("/api/assignments");
-  return handleResponse<any[]>(response);
+  const response = await axiosWithCredentials.get<Assignment[]>("/api/assignments");
+  return response.data;
 };
 
-export const createAssignment = async (
-  assignment: any,
-  role?: string | null
-) => {
-  const response = await fetch("/api/assignments", {
-    method: "POST",
-    headers: getHeaders(role),
-    body: JSON.stringify(assignment),
-  });
-  return handleResponse<any>(response);
+export const createAssignment = async (assignment: Omit<Assignment, "_id">) => {
+  const response = await axiosWithCredentials.post<Assignment>(
+    "/api/assignments",
+    assignment
+  );
+  return response.data;
 };
 
-export const updateAssignment = async (
-  assignment: any,
-  role?: string | null
-) => {
-  const response = await fetch(`/api/assignments/${assignment._id}`, {
-    method: "PUT",
-    headers: getHeaders(role),
-    body: JSON.stringify(assignment),
-  });
-  return handleResponse<any>(response);
+export const updateAssignment = async (assignment: Assignment) => {
+  const response = await axiosWithCredentials.put<Assignment>(
+    `/api/assignments/${assignment._id}`,
+    assignment
+  );
+  return response.data;
 };
 
-export const deleteAssignment = async (
-  assignmentId: string,
-  role?: string | null
+export const deleteAssignment = async (assignmentId: string) => {
+  const response = await axiosWithCredentials.delete<{ assignmentId: string }>(
+    `/api/assignments/${assignmentId}`
+  );
+  return response.data;
+};
+
+export const findModulesForCourse = async (courseId: string) => {
+  const response = await axiosWithCredentials.get<Module[]>(
+    `/api/courses/${courseId}/modules`
+  );
+  return response.data;
+};
+
+export const createModuleForCourse = async (
+  courseId: string,
+  module: Omit<Module, "_id" | "course">
 ) => {
-  const response = await fetch(`/api/assignments/${assignmentId}`, {
-    method: "DELETE",
-    headers: getHeaders(role),
-  });
-  return handleResponse<{ assignmentId: string }>(response);
+  const response = await axiosWithCredentials.post<Module>(
+    `/api/courses/${courseId}/modules`,
+    module
+  );
+  return response.data;
+};
+
+export const updateModule = async (module: Module) => {
+  const response = await axiosWithCredentials.put<Module>(
+    `/api/modules/${module._id}`,
+    module
+  );
+  return response.data;
+};
+
+export const deleteModule = async (moduleId: string) => {
+  const response = await axiosWithCredentials.delete<{ moduleId: string }>(
+    `/api/modules/${moduleId}`
+  );
+  return response.data;
+};
+
+export const getMyEnrollments = async () => {
+  const response = await axiosWithCredentials.get<Enrollment[]>(
+    "/api/users/current/enrollments"
+  );
+  return response.data;
+};
+
+export const enrollInCourse = async (courseId: string) => {
+  const response = await axiosWithCredentials.post<Enrollment>(
+    `/api/courses/${courseId}/enrollments`
+  );
+  return response.data;
+};
+
+export const unenrollFromCourse = async (courseId: string) => {
+  await axiosWithCredentials.delete(`/api/courses/${courseId}/enrollments/current`);
+  return courseId;
+};
+
+export const getUsersForCourse = async (courseId: string) => {
+  const response = await axiosWithCredentials.get<CourseUser[]>(
+    `/api/courses/${courseId}/users`
+  );
+  return response.data;
 };

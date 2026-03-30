@@ -1,11 +1,17 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { assignments } from "../../../database";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import * as api from "@/lib/kambaz/client-api";
+import type { Assignment, AssignmentDraft } from "@/lib/kambaz/client-api";
 
-const initialState = {
-  assignments: assignments as any[],
+type AssignmentsState = {
+  assignments: Assignment[];
+  status: "idle" | "loading" | "succeeded" | "failed";
+  error: string | null;
+};
+
+const initialState: AssignmentsState = {
+  assignments: [],
   status: "idle",
-  error: null as string | null,
+  error: null,
 };
 
 export const fetchAssignments = createAsyncThunk(
@@ -15,25 +21,18 @@ export const fetchAssignments = createAsyncThunk(
 
 export const createAssignmentAsync = createAsyncThunk(
   "assignments/createAssignmentAsync",
-  async ({ assignment, role }: { assignment: any; role?: string | null }) =>
-    api.createAssignment(assignment, role)
+  async (assignment: AssignmentDraft) => api.createAssignment(assignment)
 );
 
 export const updateAssignmentAsync = createAsyncThunk(
   "assignments/updateAssignmentAsync",
-  async ({ assignment, role }: { assignment: any; role?: string | null }) =>
-    api.updateAssignment(assignment, role)
+  async (assignment: Assignment) => api.updateAssignment(assignment)
 );
 
 export const deleteAssignmentAsync = createAsyncThunk(
   "assignments/deleteAssignmentAsync",
-  async (
-    {
-      assignmentId,
-      role,
-    }: { assignmentId: string; role?: string | null }
-  ) => {
-    await api.deleteAssignment(assignmentId, role);
+  async (assignmentId: string) => {
+    await api.deleteAssignment(assignmentId);
     return assignmentId;
   }
 );
@@ -42,18 +41,18 @@ const assignmentsSlice = createSlice({
   name: "assignments",
   initialState,
   reducers: {
-    addAssignment: (state, { payload: assignment }) => {
-      state.assignments = [...state.assignments, assignment] as any;
+    addAssignment: (state, action: PayloadAction<Assignment>) => {
+      state.assignments = [...state.assignments, action.payload];
     },
-    deleteAssignment: (state, { payload: assignmentId }) => {
+    deleteAssignment: (state, action: PayloadAction<string>) => {
       state.assignments = state.assignments.filter(
-        (a: any) => a._id !== assignmentId
+        (assignment) => assignment._id !== action.payload
       );
     },
-    updateAssignment: (state, { payload: assignment }) => {
-      state.assignments = state.assignments.map((a: any) =>
-        a._id === assignment._id ? assignment : a
-      ) as any;
+    updateAssignment: (state, action: PayloadAction<Assignment>) => {
+      state.assignments = state.assignments.map((assignment) =>
+        assignment._id === action.payload._id ? action.payload : assignment
+      );
     },
   },
   extraReducers: (builder) => {
@@ -71,28 +70,30 @@ const assignmentsSlice = createSlice({
         state.error = action.error.message ?? "Unable to load assignments.";
       })
       .addCase(createAssignmentAsync.fulfilled, (state, action) => {
-        state.assignments = [...state.assignments, action.payload] as any;
+        state.assignments = [...state.assignments, action.payload];
+        state.error = null;
       })
       .addCase(updateAssignmentAsync.fulfilled, (state, action) => {
-        state.assignments = state.assignments.map((assignment: any) =>
+        state.assignments = state.assignments.map((assignment) =>
           assignment._id === action.payload._id ? action.payload : assignment
-        ) as any;
+        );
+        state.error = null;
       })
       .addCase(deleteAssignmentAsync.fulfilled, (state, action) => {
         state.assignments = state.assignments.filter(
-          (assignment: any) => assignment._id !== action.payload
+          (assignment) => assignment._id !== action.payload
         );
+        state.error = null;
       })
-      .addMatcher(
-        (action) =>
-          action.type === createAssignmentAsync.rejected.type ||
-          action.type === updateAssignmentAsync.rejected.type ||
-          action.type === deleteAssignmentAsync.rejected.type,
-        (state, action: any) => {
-          state.error =
-            action.error?.message ?? "Unable to save assignment changes.";
-        }
-      );
+      .addCase(createAssignmentAsync.rejected, (state, action) => {
+        state.error = action.error.message ?? "Unable to save assignment changes.";
+      })
+      .addCase(updateAssignmentAsync.rejected, (state, action) => {
+        state.error = action.error.message ?? "Unable to save assignment changes.";
+      })
+      .addCase(deleteAssignmentAsync.rejected, (state, action) => {
+        state.error = action.error.message ?? "Unable to save assignment changes.";
+      });
   },
 });
 
