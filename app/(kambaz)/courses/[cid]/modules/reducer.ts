@@ -1,14 +1,11 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import * as api from "@/lib/kambaz/client-api";
+import type { Module } from "@/lib/kambaz/client-api";
+
+type ModuleRow = Module & { editing?: boolean };
 
 const initialState = {
-  modules: [] as {
-    _id: string;
-    name: string;
-    course: string;
-    lessons?: { _id: string; name: string }[];
-    editing?: boolean;
-  }[],
+  modules: [] as ModuleRow[],
   status: "idle",
   error: null as string | null,
 };
@@ -31,13 +28,11 @@ export const createModuleAsync = createAsyncThunk(
 
 export const saveModuleAsync = createAsyncThunk(
   "modules/saveModuleAsync",
-  async (module: {
-    _id: string;
-    name: string;
-    course: string;
-    lessons?: { _id: string; name: string }[];
-    editing?: boolean;
-  }) => api.updateModule(module)
+  async (module: ModuleRow) =>
+    api.updateModule({
+      ...module,
+      name: module.name ?? module.title ?? "",
+    })
 );
 
 export const deleteModuleAsync = createAsyncThunk(

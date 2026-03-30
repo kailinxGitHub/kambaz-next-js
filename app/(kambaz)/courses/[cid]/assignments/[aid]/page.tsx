@@ -48,7 +48,9 @@ export default function AssignmentEditor() {
   );
   const assignment =
     draftAssignment &&
-    (aid === "new" ? !("_id" in draftAssignment) : draftAssignment._id === aid)
+    (aid === "new"
+      ? !("_id" in draftAssignment)
+      : "_id" in draftAssignment && draftAssignment._id === aid)
       ? draftAssignment
       : existingAssignment ?? emptyAssignment;
 

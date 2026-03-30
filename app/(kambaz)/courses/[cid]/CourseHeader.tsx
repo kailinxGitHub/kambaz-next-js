@@ -10,7 +10,7 @@ export default function CourseHeader({ cid, toggleNav }: { cid: string; toggleNa
   const pathname = usePathname();
   const { courses } = useAppSelector((state) => state.coursesReducer);
   const course = courses.find((currentCourse: Course) => currentCourse._id === cid);
-  const courseLabel = course ? course.name : "Course Not Found";
+  const courseLabel = course?.name ?? "Course Not Found";
 
   const segments: { label: string; href: string }[] = [
     { label: courseLabel, href: `/courses/${cid}/home` },
