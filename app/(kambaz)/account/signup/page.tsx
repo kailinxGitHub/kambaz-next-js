@@ -5,7 +5,7 @@ import { useState } from "react";
 import { FormControl } from "react-bootstrap";
 import { useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
-import { signup } from "../client";
+import { getHttpErrorMessage, signup } from "../client";
 import { setCurrentUser } from "../reducer";
 
 export default function Signup() {
@@ -27,9 +27,7 @@ export default function Signup() {
       setErrorMessage("");
       router.push("/account/profile");
     } catch (error) {
-      setErrorMessage(
-        error instanceof Error ? error.message : "Unable to sign up."
-      );
+      setErrorMessage(getHttpErrorMessage(error));
     }
   };
 

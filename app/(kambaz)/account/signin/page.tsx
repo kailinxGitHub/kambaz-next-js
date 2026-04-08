@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { FormControl } from "react-bootstrap";
-import { signin } from "../client";
+import { getHttpErrorMessage, signin } from "../client";
 import { setCurrentUser } from "../reducer";
 import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "../../hooks";
@@ -28,9 +28,7 @@ export default function Signin() {
       setErrorMessage("");
       router.push("/dashboard");
     } catch (error) {
-      setErrorMessage(
-        error instanceof Error ? error.message : "Unable to sign in."
-      );
+      setErrorMessage(getHttpErrorMessage(error));
     }
   };
 

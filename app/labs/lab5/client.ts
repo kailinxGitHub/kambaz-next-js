@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getHttpErrorMessage as getHttpErr } from "@/lib/http-error";
 
 export type Assignment = {
   id: number;
@@ -110,11 +111,5 @@ export async function updateTodo(todo: Todo) {
 }
 
 export function getErrorMessage(error: unknown) {
-  if (axios.isAxiosError(error)) {
-    return error.response?.data?.message || error.message;
-  }
-  if (error instanceof Error) {
-    return error.message;
-  }
-  return "Unknown error";
+  return getHttpErr(error);
 }
