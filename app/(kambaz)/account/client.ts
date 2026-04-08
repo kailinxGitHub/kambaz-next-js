@@ -1,5 +1,7 @@
 import axios from "axios";
 
+export { getHttpErrorMessage } from "@/lib/http-error";
+
 export type User = {
   _id: string;
   username: string;

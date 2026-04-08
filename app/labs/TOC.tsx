@@ -4,6 +4,9 @@ import { Nav, NavItem, NavLink } from "react-bootstrap";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+const HTTP_SERVER =
+  process.env.NEXT_PUBLIC_HTTP_SERVER || "http://localhost:4000";
+
 export default function TOC() {
   const pathname = usePathname();
 
@@ -50,6 +53,11 @@ export default function TOC() {
           id="wd-github"
         >
           GitHub Repository
+        </NavLink>
+      </NavItem>
+      <NavItem>
+        <NavLink href={HTTP_SERVER} id="wd-api-server" target="_blank" rel="noopener noreferrer">
+          API Server
         </NavLink>
       </NavItem>
     </Nav>

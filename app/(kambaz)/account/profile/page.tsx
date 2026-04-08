@@ -3,7 +3,7 @@ import { Button, FormControl, FormLabel, FormSelect } from "react-bootstrap";
 import { FaCalendarAlt } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { clearEnrollments } from "../../enrollments/reducer";
-import { signout, updateUser, User } from "../client";
+import { getHttpErrorMessage, signout, updateUser, User } from "../client";
 import { setCurrentUser } from "../reducer";
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../hooks";
@@ -37,18 +37,20 @@ export default function Profile() {
       setDraftProfile(null);
       setErrorMessage("");
     } catch (error) {
-      setErrorMessage(
-        error instanceof Error ? error.message : "Unable to update profile."
-      );
+      setErrorMessage(getHttpErrorMessage(error));
     }
   };
 
   const handleSignout = async () => {
-    await signout();
-    dispatch(setCurrentUser(null));
-    dispatch(clearEnrollments());
-    setDraftProfile(null);
-    router.push("/account/signin");
+    try {
+      await signout();
+      dispatch(setCurrentUser(null));
+      dispatch(clearEnrollments());
+      setDraftProfile(null);
+      router.push("/account/signin");
+    } catch (error) {
+      setErrorMessage(getHttpErrorMessage(error));
+    }
   };
 
   if (!isLoaded || !currentUser || !profile) return null;
