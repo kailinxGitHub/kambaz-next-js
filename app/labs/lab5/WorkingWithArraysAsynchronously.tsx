@@ -221,7 +221,7 @@ export default function WorkingWithArraysAsynchronously() {
               )}
             </div>
             <button
-              id={`wd-put-todo-${todo.id}`}
+              id="wd-put-todo"
               className="btn btn-warning"
               type="button"
               onClick={() => {
@@ -233,7 +233,7 @@ export default function WorkingWithArraysAsynchronously() {
               <FaPencilAlt />
             </button>
             <button
-              id={`wd-remove-todo-${todo.id}`}
+              id="wd-remove-todo"
               className="btn btn-danger"
               type="button"
               onClick={() => void handleLegacyDelete(todo.id)}
@@ -242,7 +242,7 @@ export default function WorkingWithArraysAsynchronously() {
               <FaTrash />
             </button>
             <button
-              id={`wd-delete-todo-${todo.id}`}
+              id="wd-delete-todo"
               className="btn btn-outline-danger"
               type="button"
               onClick={() => void handleDelete(todo.id)}
