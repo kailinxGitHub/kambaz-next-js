@@ -30,6 +30,14 @@ export default function AccountNavigation() {
             {link.label}
           </Link>
         ))}
+        {currentUser && currentUser.role === "ADMIN" && (
+          <Link
+            href="/account/users"
+            className={`d-block py-1 ps-2 text-decoration-none ${pathname === "/account/users" ? "text-black fw-semibold border-start border-secondary border-2" : "text-danger"}`}
+          >
+            Users
+          </Link>
+        )}
       </div>
     </div>
   );
