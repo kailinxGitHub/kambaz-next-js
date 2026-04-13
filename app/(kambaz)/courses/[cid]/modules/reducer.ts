@@ -28,8 +28,8 @@ export const createModuleAsync = createAsyncThunk(
 
 export const saveModuleAsync = createAsyncThunk(
   "modules/saveModuleAsync",
-  async (module: ModuleRow) =>
-    api.updateModule({
+  async ({ courseId, module }: { courseId: string; module: ModuleRow }) =>
+    api.updateModule(courseId, {
       ...module,
       name: module.name ?? module.title ?? "",
     })
@@ -37,8 +37,8 @@ export const saveModuleAsync = createAsyncThunk(
 
 export const deleteModuleAsync = createAsyncThunk(
   "modules/deleteModuleAsync",
-  async (moduleId: string) => {
-    await api.deleteModule(moduleId);
+  async ({ courseId, moduleId }: { courseId: string; moduleId: string }) => {
+    await api.deleteModule(courseId, moduleId);
     return moduleId;
   }
 );

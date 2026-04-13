@@ -133,17 +133,31 @@ export const createModuleForCourse = async (
   return response.data;
 };
 
-export const updateModule = async (module: Module) => {
+export const updateModule = async (courseId: string, module: Module) => {
   const response = await axiosWithCredentials.put<Module>(
-    `/api/modules/${module._id}`,
+    `/api/courses/${courseId}/modules/${module._id}`,
     module
   );
   return response.data;
 };
 
-export const deleteModule = async (moduleId: string) => {
-  const response = await axiosWithCredentials.delete<{ moduleId: string }>(
-    `/api/modules/${moduleId}`
+export const deleteModule = async (courseId: string, moduleId: string) => {
+  const response = await axiosWithCredentials.delete(
+    `/api/courses/${courseId}/modules/${moduleId}`
+  );
+  return response.data;
+};
+
+export const enrollIntoCourse = async (userId: string, courseId: string) => {
+  const response = await axiosWithCredentials.post(
+    `/api/users/${userId}/courses/${courseId}`
+  );
+  return response.data;
+};
+
+export const unenrollFromCourseByUser = async (userId: string, courseId: string) => {
+  const response = await axiosWithCredentials.delete(
+    `/api/users/${userId}/courses/${courseId}`
   );
   return response.data;
 };

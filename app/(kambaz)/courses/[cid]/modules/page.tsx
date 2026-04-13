@@ -61,18 +61,18 @@ export default function Modules() {
                     }
                     onKeyDown={async (e) => {
                       if (e.key === "Enter") {
-                        await dispatch(saveModuleAsync({ ...module, editing: false }));
+                        await dispatch(saveModuleAsync({ courseId: cid, module: { ...module, editing: false } }));
                       }
                     }}
                     onBlur={async () => {
-                      await dispatch(saveModuleAsync({ ...module, editing: false }));
+                      await dispatch(saveModuleAsync({ courseId: cid, module: { ...module, editing: false } }));
                     }}
                     defaultValue={module.name}
                   />
                 )}
                 <ModuleControlButtons
                   moduleId={module._id}
-                  deleteModule={(moduleId) => dispatch(deleteModuleAsync(moduleId))}
+                  deleteModule={(moduleId) => dispatch(deleteModuleAsync({ courseId: cid, moduleId }))}
                   editModule={(moduleId) => dispatch(editModule(moduleId))}
                 />
               </div>
