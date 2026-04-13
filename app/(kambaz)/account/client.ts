@@ -57,3 +57,33 @@ export const updateUser = async (user: User) => {
 export const signout = async () => {
   await axiosWithCredentials.post("/api/users/signout");
 };
+
+export const findAllUsers = async () => {
+  const response = await axiosWithCredentials.get<User[]>("/api/users");
+  return response.data;
+};
+
+export const findUsersByRole = async (role: string) => {
+  const response = await axiosWithCredentials.get<User[]>(`/api/users?role=${role}`);
+  return response.data;
+};
+
+export const findUsersByPartialName = async (name: string) => {
+  const response = await axiosWithCredentials.get<User[]>(`/api/users?name=${name}`);
+  return response.data;
+};
+
+export const findUserById = async (id: string) => {
+  const response = await axiosWithCredentials.get<User>(`/api/users/${id}`);
+  return response.data;
+};
+
+export const deleteUser = async (userId: string) => {
+  const response = await axiosWithCredentials.delete(`/api/users/${userId}`);
+  return response.data;
+};
+
+export const createUser = async (user: Partial<User>) => {
+  const response = await axiosWithCredentials.post<User>("/api/users", user);
+  return response.data;
+};
